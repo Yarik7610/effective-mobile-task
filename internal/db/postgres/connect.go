@@ -1,4 +1,4 @@
-package connect
+package postgres
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func Postgres(ctx context.Context, cfg *config.Config) *pgxpool.Pool {
+func Connect(ctx context.Context, cfg *config.Config) *pgxpool.Pool {
 	pool, err := pgxpool.New(ctx, cfg.PostgresDSN)
 	if err != nil {
 		log.Fatalf("Can't connect to Postgres: %v", err)
