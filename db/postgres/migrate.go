@@ -12,7 +12,7 @@ import (
 	"github.com/jackc/pgx/v5/stdlib"
 )
 
-const POSTGRES_MIGRATIONS_PATH = "internal/db/postgres/migrations"
+const POSTGRES_MIGRATIONS_PATH = "db/postgres/migrations"
 
 func RunMigrations(pool *pgxpool.Pool) {
 	db := stdlib.OpenDBFromPool(pool)
