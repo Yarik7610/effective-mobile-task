@@ -1,7 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"context"
+
+	"github.com/Yarik7610/effective-mobile-task/config"
+	"github.com/Yarik7610/effective-mobile-task/internal/connect"
+)
 
 func main() {
-	fmt.Println("Hello world")
+	cfg := config.Load()
+
+	connect.Postgres(context.Background(), cfg)
 }
