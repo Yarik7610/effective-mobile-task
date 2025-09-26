@@ -12,7 +12,7 @@ import (
 type SubscriptionController interface {
 	CreateSubscription(ctx *gin.Context)
 	ReadSubscription(ctx *gin.Context)
-	PutSubscription(ctx *gin.Context)
+	UpdateSubscription(ctx *gin.Context)
 	DeleteSubscription(ctx *gin.Context)
 }
 
@@ -43,9 +43,20 @@ func (c *subscriptionController) CreateSubscription(ctx *gin.Context) {
 }
 
 func (c *subscriptionController) ReadSubscription(ctx *gin.Context) {
+	subscriptionID := ctx.Param("subscriptionID")
 
+	subscription, err := c.subscriptionService.ReadSubscription(subscriptionID)
+	if err != nil {
+
+		slog.Error("Subscription read failed", slog.Any("error", err))
+		ctx.JSON(err.Code, gin.H{"error": err.Message})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, subscription)
 }
-func (c *subscriptionController) PutSubscription(ctx *gin.Context) {
+
+func (c *subscriptionController) UpdateSubscription(ctx *gin.Context) {
 
 }
 func (c *subscriptionController) DeleteSubscription(ctx *gin.Context) {

@@ -48,7 +48,28 @@ func (r *subscriptionRepository) CreateSubscription(ctx context.Context, subscri
 	return nil
 }
 func (r *subscriptionRepository) ReadSubscription(ctx context.Context, subscriptionID string) (*model.Subscription, error) {
-	return nil, nil
+	sql := `
+		SELECT subscription_id, service_name, price, user_id, start_date, end_date
+		FROM subscriptions
+		WHERE subscription_id = $1
+	`
+
+	subscription := model.Subscription{}
+
+	err := r.pool.QueryRow(ctx, sql, subscriptionID).Scan(
+		&subscription.SubscriptionID,
+		&subscription.ServiceName,
+		&subscription.Price,
+		&subscription.UserID,
+		&subscription.StartDate,
+		&subscription.EndDate,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &subscription, nil
 }
 func (r *subscriptionRepository) PutSubscription(ctx context.Context, updatedSubscription *model.Subscription) error {
 	return nil

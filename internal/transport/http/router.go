@@ -16,10 +16,10 @@ func InitRouter(pool *pgxpool.Pool) *gin.Engine {
 
 	subscriptionsGroup := router.Group("/subscriptions")
 	{
-		subscriptionsGroup.GET("/:subscriptionID", subscriptionController.CreateSubscription)
+		subscriptionsGroup.GET("/:subscriptionID", subscriptionController.ReadSubscription)
 		subscriptionsGroup.POST("/", subscriptionController.CreateSubscription)
-		subscriptionsGroup.PUT("/:subscriptionID", subscriptionController.CreateSubscription)
-		subscriptionsGroup.DELETE("/:subscriptionID", subscriptionController.CreateSubscription)
+		subscriptionsGroup.PUT("/:subscriptionID", subscriptionController.UpdateSubscription)
+		subscriptionsGroup.DELETE("/:subscriptionID", subscriptionController.DeleteSubscription)
 	}
 
 	return router

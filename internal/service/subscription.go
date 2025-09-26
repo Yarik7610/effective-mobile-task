@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"net/http"
 	"time"
 
@@ -10,6 +12,8 @@ import (
 	"github.com/Yarik7610/effective-mobile-task/internal/repository/postgres"
 	"github.com/Yarik7610/effective-mobile-task/utils"
 )
+
+var ErrSubscriptionNotFound = errors.New("subscription not found")
 
 type SubscriptionService interface {
 	CreateSubscription(createSubscriptionDTO *dto.CreateSubscription) (*model.Subscription, *utils.Err)
@@ -31,6 +35,7 @@ func (s *subscriptionService) CreateSubscription(createSubscriptionDTO *dto.Crea
 	if err != nil {
 		return nil, utils.NewErr(http.StatusBadRequest, err.Error())
 	}
+
 	var endDateTime *time.Time
 	if createSubscriptionDTO.EndDate != nil {
 		t, err := utils.ParseMonthYearStringToTime(*createSubscriptionDTO.EndDate)
@@ -55,9 +60,19 @@ func (s *subscriptionService) CreateSubscription(createSubscriptionDTO *dto.Crea
 
 	return &subscription, nil
 }
+
 func (s *subscriptionService) ReadSubscription(subscriptionID string) (*model.Subscription, *utils.Err) {
-	return nil, nil
+	subscription, err := s.subscriptionRepository.ReadSubscription(context.Background(), subscriptionID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, utils.NewErr(http.StatusNotFound, ErrSubscriptionNotFound.Error())
+		}
+		return nil, utils.NewErr(http.StatusInternalServerError, err.Error())
+	}
+
+	return subscription, nil
 }
+
 func (s *subscriptionService) PutSubscription(createSubscriptionDTO *dto.UpdateSubscription) (*model.Subscription, *utils.Err) {
 	return nil, nil
 }
