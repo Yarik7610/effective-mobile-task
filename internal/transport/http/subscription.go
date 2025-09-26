@@ -47,7 +47,6 @@ func (c *subscriptionController) ReadSubscription(ctx *gin.Context) {
 
 	subscription, err := c.subscriptionService.ReadSubscription(subscriptionID)
 	if err != nil {
-
 		slog.Error("Subscription read failed", slog.Any("error", err))
 		ctx.JSON(err.Code, gin.H{"error": err.Message})
 		return
@@ -57,8 +56,24 @@ func (c *subscriptionController) ReadSubscription(ctx *gin.Context) {
 }
 
 func (c *subscriptionController) UpdateSubscription(ctx *gin.Context) {
+	subscriptionID := ctx.Param("subscriptionID")
 
+	var updateSubscriptionDTO dto.UpdateSubscription
+	if err := ctx.ShouldBindJSON(&updateSubscriptionDTO); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	updatedSubscription, err := c.subscriptionService.UpdateSubscription(&updateSubscriptionDTO, subscriptionID)
+	if err != nil {
+		slog.Error("Subscription update failed", slog.Any("error", err))
+		ctx.JSON(err.Code, gin.H{"error": err.Message})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, updatedSubscription)
 }
+
 func (c *subscriptionController) DeleteSubscription(ctx *gin.Context) {
 
 }

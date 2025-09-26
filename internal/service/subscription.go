@@ -18,7 +18,7 @@ var ErrSubscriptionNotFound = errors.New("subscription not found")
 type SubscriptionService interface {
 	CreateSubscription(createSubscriptionDTO *dto.CreateSubscription) (*model.Subscription, *utils.Err)
 	ReadSubscription(subscriptionID string) (*model.Subscription, *utils.Err)
-	PutSubscription(createSubscriptionDTO *dto.UpdateSubscription) (*model.Subscription, *utils.Err)
+	UpdateSubscription(updateSubscriptionDTO *dto.UpdateSubscription, subscriptionID string) (*model.Subscription, *utils.Err)
 	DeleteSubscription(subscriptionID string) *utils.Err
 }
 
@@ -73,9 +73,42 @@ func (s *subscriptionService) ReadSubscription(subscriptionID string) (*model.Su
 	return subscription, nil
 }
 
-func (s *subscriptionService) PutSubscription(createSubscriptionDTO *dto.UpdateSubscription) (*model.Subscription, *utils.Err) {
-	return nil, nil
+func (s *subscriptionService) UpdateSubscription(updateSubscriptionDTO *dto.UpdateSubscription, subscriptionID string) (*model.Subscription, *utils.Err) {
+	var startDateTime time.Time
+	if updateSubscriptionDTO.StartDate != nil {
+		t, err := utils.ParseMonthYearStringToTime(*updateSubscriptionDTO.StartDate)
+		if err != nil {
+			return nil, utils.NewErr(http.StatusBadRequest, err.Error())
+		}
+		startDateTime = t
+	}
+
+	var endDateTime *time.Time
+	if updateSubscriptionDTO.EndDate != nil {
+		t, err := utils.ParseMonthYearStringToTime(*updateSubscriptionDTO.EndDate)
+		if err != nil {
+			return nil, utils.NewErr(http.StatusBadRequest, err.Error())
+		}
+		endDateTime = &t
+	}
+
+	updatedSubscription := model.Subscription{
+		SubscriptionID: subscriptionID,
+		StartDate:      startDateTime,
+		EndDate:        endDateTime,
+	}
+
+	err := s.subscriptionRepository.UpdateSubscription(context.Background(), updateSubscriptionDTO, &updatedSubscription, subscriptionID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, utils.NewErr(http.StatusNotFound, ErrSubscriptionNotFound.Error())
+		}
+		return nil, utils.NewErr(http.StatusInternalServerError, err.Error())
+	}
+
+	return &updatedSubscription, nil
 }
+
 func (s *subscriptionService) DeleteSubscription(subscriptionID string) *utils.Err {
 	return nil
 }
