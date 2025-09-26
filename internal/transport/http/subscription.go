@@ -1,6 +1,10 @@
 package http
 
 import (
+	"log/slog"
+	"net/http"
+
+	"github.com/Yarik7610/effective-mobile-task/internal/dto"
 	"github.com/Yarik7610/effective-mobile-task/internal/service"
 	"github.com/gin-gonic/gin"
 )
@@ -21,8 +25,23 @@ func NewSubsciptionController(subscriptionService service.SubscriptionService) S
 }
 
 func (c *subscriptionController) CreateSubscription(ctx *gin.Context) {
+	var createSubscriptionDTO dto.CreateSubscription
 
+	if err := ctx.ShouldBindJSON(&createSubscriptionDTO); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	subscription, customErr := c.subscriptionService.CreateSubscription(&createSubscriptionDTO)
+	if customErr != nil {
+		slog.Error("Subscription create failed", slog.Any("error", customErr))
+		ctx.JSON(customErr.Code, gin.H{"error": customErr.Message})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, subscription)
 }
+
 func (c *subscriptionController) ReadSubscription(ctx *gin.Context) {
 
 }

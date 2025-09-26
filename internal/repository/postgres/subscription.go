@@ -22,15 +22,37 @@ func NewSubsciptionRepository(pool *pgxpool.Pool) SubscriptionRepository {
 	return &subscriptionRepository{pool: pool}
 }
 
-func (c *subscriptionRepository) CreateSubscription(ctx context.Context, subscription *model.Subscription) error {
+func (r *subscriptionRepository) CreateSubscription(ctx context.Context, subscription *model.Subscription) error {
+	sql := `
+		INSERT INTO subscriptions (service_name, price, user_id, start_date, end_date)
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING subscription_id
+	`
+
+	var subscriptionID string
+
+	err := r.pool.QueryRow(ctx, sql,
+		subscription.ServiceName,
+		subscription.Price,
+		subscription.UserID,
+		subscription.StartDate,
+		subscription.EndDate,
+	).Scan(&subscriptionID)
+
+	if err != nil {
+		return err
+	}
+
+	subscription.SubscriptionID = subscriptionID
+
 	return nil
 }
-func (c *subscriptionRepository) ReadSubscription(ctx context.Context, subscriptionID string) (*model.Subscription, error) {
+func (r *subscriptionRepository) ReadSubscription(ctx context.Context, subscriptionID string) (*model.Subscription, error) {
 	return nil, nil
 }
-func (c *subscriptionRepository) PutSubscription(ctx context.Context, updatedSubscription *model.Subscription) error {
+func (r *subscriptionRepository) PutSubscription(ctx context.Context, updatedSubscription *model.Subscription) error {
 	return nil
 }
-func (c *subscriptionRepository) DeleteSubscription(ctx context.Context, subscriptionID string) error {
+func (r *subscriptionRepository) DeleteSubscription(ctx context.Context, subscriptionID string) error {
 	return nil
 }

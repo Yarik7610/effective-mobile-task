@@ -3,7 +3,7 @@ package model
 import "time"
 
 type Subscription struct {
-	SubscriptionID string     `json:"id"`
+	SubscriptionID string     `json:"subscription_id"`
 	ServiceName    string     `json:"service_name"`
 	Price          int        `json:"price"`
 	UserID         string     `json:"user_id"`

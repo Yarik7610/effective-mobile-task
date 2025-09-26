@@ -1,6 +1,10 @@
 package service
 
 import (
+	"context"
+	"net/http"
+	"time"
+
 	"github.com/Yarik7610/effective-mobile-task/internal/dto"
 	"github.com/Yarik7610/effective-mobile-task/internal/model"
 	"github.com/Yarik7610/effective-mobile-task/internal/repository/postgres"
@@ -22,15 +26,41 @@ func NewSubsciptionService(subscriptionRepository postgres.SubscriptionRepositor
 	return &subscriptionService{subscriptionRepository: subscriptionRepository}
 }
 
-func (c *subscriptionService) CreateSubscription(createSubscriptionDTO *dto.CreateSubscription) (*model.Subscription, *utils.Err) {
+func (s *subscriptionService) CreateSubscription(createSubscriptionDTO *dto.CreateSubscription) (*model.Subscription, *utils.Err) {
+	startDateTime, err := utils.ParseMonthYearStringToTime(createSubscriptionDTO.StartDate)
+	if err != nil {
+		return nil, utils.NewErr(http.StatusBadRequest, err.Error())
+	}
+	var endDateTime *time.Time
+	if createSubscriptionDTO.EndDate != nil {
+		t, err := utils.ParseMonthYearStringToTime(*createSubscriptionDTO.EndDate)
+		if err != nil {
+			return nil, utils.NewErr(http.StatusBadRequest, err.Error())
+		}
+		endDateTime = &t
+	}
+
+	subscription := model.Subscription{
+		ServiceName: createSubscriptionDTO.ServiceName,
+		Price:       createSubscriptionDTO.Price,
+		UserID:      createSubscriptionDTO.UserID,
+		StartDate:   startDateTime,
+		EndDate:     endDateTime,
+	}
+
+	err = s.subscriptionRepository.CreateSubscription(context.Background(), &subscription)
+	if err != nil {
+		return nil, utils.NewErr(http.StatusInternalServerError, err.Error())
+	}
+
+	return &subscription, nil
+}
+func (s *subscriptionService) ReadSubscription(subscriptionID string) (*model.Subscription, *utils.Err) {
 	return nil, nil
 }
-func (c *subscriptionService) ReadSubscription(subscriptionID string) (*model.Subscription, *utils.Err) {
+func (s *subscriptionService) PutSubscription(createSubscriptionDTO *dto.UpdateSubscription) (*model.Subscription, *utils.Err) {
 	return nil, nil
 }
-func (c *subscriptionService) PutSubscription(createSubscriptionDTO *dto.UpdateSubscription) (*model.Subscription, *utils.Err) {
-	return nil, nil
-}
-func (c *subscriptionService) DeleteSubscription(subscriptionID string) *utils.Err {
+func (s *subscriptionService) DeleteSubscription(subscriptionID string) *utils.Err {
 	return nil
 }
