@@ -121,5 +121,17 @@ func (s *subscriptionService) DeleteSubscription(subscriptionID string) *utils.E
 }
 
 func (s *subscriptionService) ListSubscriptions(listSubscriptionsQuery *query.ListSubscriptions) ([]model.Subscription, *utils.Err) {
-	return nil, nil
+	subscriptions, err := s.subscriptionRepository.ListSubscriptions(
+		context.Background(),
+		listSubscriptionsQuery.Page,
+		listSubscriptionsQuery.Count,
+		listSubscriptionsQuery.Sort,
+		listSubscriptionsQuery.Order,
+	)
+
+	if err != nil {
+		return nil, utils.NewErr(http.StatusInternalServerError, err.Error())
+	}
+
+	return subscriptions, nil
 }

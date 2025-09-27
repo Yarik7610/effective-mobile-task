@@ -147,5 +147,42 @@ func (r *subscriptionRepository) DeleteSubscription(ctx context.Context, subscri
 }
 
 func (r *subscriptionRepository) ListSubscriptions(ctx context.Context, page, count uint, sort, order string) ([]model.Subscription, error) {
-	return nil, nil
+	sql := fmt.Sprintf(`
+		SELECT subscription_id, service_name, price, user_id, start_date, end_date 
+		FROM subscriptions
+		ORDER BY %s %s 
+		LIMIT $1
+		OFFSET $2
+	`, sort, order)
+
+	rows, err := r.pool.Query(ctx, sql, count, (page-1)*count)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var subscriptions []model.Subscription
+	for rows.Next() {
+		var subscription model.Subscription
+
+		err := rows.Scan(
+			&subscription.SubscriptionID,
+			&subscription.ServiceName,
+			&subscription.Price,
+			&subscription.UserID,
+			&subscription.StartDate,
+			&subscription.EndDate,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		subscriptions = append(subscriptions, subscription)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return subscriptions, nil
 }
