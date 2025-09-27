@@ -137,5 +137,10 @@ func (r *subscriptionRepository) UpdateSubscription(
 }
 
 func (r *subscriptionRepository) DeleteSubscription(ctx context.Context, subscriptionID string) error {
-	return nil
+	sql := `
+		DELETE FROM subscriptions
+		WHERE subscription_id = $1
+	`
+	_, err := r.pool.Exec(ctx, sql, subscriptionID)
+	return err
 }

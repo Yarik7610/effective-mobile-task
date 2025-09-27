@@ -110,5 +110,10 @@ func (s *subscriptionService) UpdateSubscription(updateSubscriptionDTO *dto.Upda
 }
 
 func (s *subscriptionService) DeleteSubscription(subscriptionID string) *utils.Err {
+	err := s.subscriptionRepository.DeleteSubscription(context.Background(), subscriptionID)
+	if err != nil {
+		return utils.NewErr(http.StatusInternalServerError, err.Error())
+	}
+
 	return nil
 }

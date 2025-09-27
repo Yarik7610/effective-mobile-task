@@ -7,6 +7,7 @@ import (
 	"github.com/Yarik7610/effective-mobile-task/internal/dto"
 	"github.com/Yarik7610/effective-mobile-task/internal/service"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type SubscriptionController interface {
@@ -45,6 +46,11 @@ func (c *subscriptionController) CreateSubscription(ctx *gin.Context) {
 func (c *subscriptionController) ReadSubscription(ctx *gin.Context) {
 	subscriptionID := ctx.Param("subscriptionID")
 
+	if _, err := uuid.Parse(subscriptionID); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "subscriptionID isn't a valid UUID"})
+		return
+	}
+
 	subscription, err := c.subscriptionService.ReadSubscription(subscriptionID)
 	if err != nil {
 		slog.Error("Subscription read failed", slog.Any("error", err))
@@ -57,6 +63,11 @@ func (c *subscriptionController) ReadSubscription(ctx *gin.Context) {
 
 func (c *subscriptionController) UpdateSubscription(ctx *gin.Context) {
 	subscriptionID := ctx.Param("subscriptionID")
+
+	if _, err := uuid.Parse(subscriptionID); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "subscriptionID isn't a valid UUID"})
+		return
+	}
 
 	var updateSubscriptionDTO dto.UpdateSubscription
 	if err := ctx.ShouldBindJSON(&updateSubscriptionDTO); err != nil {
@@ -75,5 +86,19 @@ func (c *subscriptionController) UpdateSubscription(ctx *gin.Context) {
 }
 
 func (c *subscriptionController) DeleteSubscription(ctx *gin.Context) {
+	subscriptionID := ctx.Param("subscriptionID")
 
+	if _, err := uuid.Parse(subscriptionID); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "subscriptionID isn't a valid UUID"})
+		return
+	}
+
+	err := c.subscriptionService.DeleteSubscription(subscriptionID)
+	if err != nil {
+		slog.Error("Subscription delete failed", slog.Any("error", err))
+		ctx.JSON(err.Code, gin.H{"error": err.Message})
+		return
+	}
+
+	ctx.AbortWithStatus(http.StatusNoContent)
 }
