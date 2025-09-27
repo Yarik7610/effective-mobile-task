@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/Yarik7610/effective-mobile-task/internal/dto"
 	"github.com/Yarik7610/effective-mobile-task/internal/model"
@@ -17,6 +18,7 @@ type SubscriptionRepository interface {
 	UpdateSubscription(ctx context.Context, updateSubscriptionDTO *dto.UpdateSubscription, updatedSubscription *model.Subscription, subscriptionID string) error
 	DeleteSubscription(ctx context.Context, subscriptionID string) error
 	ListSubscriptions(ctx context.Context, page, count uint, sort, order string) ([]model.Subscription, error)
+	TotalSubscriptionsPrice(ctx context.Context, startDate, endDate time.Time, userID, serviceName *string) (uint, error)
 }
 
 type subscriptionRepository struct {
@@ -185,4 +187,8 @@ func (r *subscriptionRepository) ListSubscriptions(ctx context.Context, page, co
 	}
 
 	return subscriptions, nil
+}
+
+func (r *subscriptionRepository) TotalSubscriptionsPrice(ctx context.Context, startDate, endDate time.Time, userID, serviceName *string) (uint, error) {
+	return 0, nil
 }

@@ -22,6 +22,7 @@ type SubscriptionService interface {
 	UpdateSubscription(updateSubscriptionDTO *dto.UpdateSubscription, subscriptionID string) (*model.Subscription, *utils.Err)
 	DeleteSubscription(subscriptionID string) *utils.Err
 	ListSubscriptions(listSubscriptionsQuery *query.ListSubscriptions) ([]model.Subscription, *utils.Err)
+	TotalSubscriptionsPrice(totalSubscriptionsPriceQuery *query.TotalSubscriptionsPrice) (uint, *utils.Err)
 }
 
 type subscriptionService struct {
@@ -134,4 +135,8 @@ func (s *subscriptionService) ListSubscriptions(listSubscriptionsQuery *query.Li
 	}
 
 	return subscriptions, nil
+}
+
+func (s *subscriptionService) TotalSubscriptionsPrice(totalSubscriptionsPriceQuery *query.TotalSubscriptionsPrice) (uint, *utils.Err) {
+	return 0, nil
 }

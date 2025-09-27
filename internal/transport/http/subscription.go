@@ -17,6 +17,7 @@ type SubscriptionController interface {
 	UpdateSubscription(ctx *gin.Context)
 	DeleteSubscription(ctx *gin.Context)
 	ListSubscriptions(ctx *gin.Context)
+	TotalSubscriptionsPrice(ctx *gin.Context)
 }
 
 type subscriptionController struct {
@@ -135,4 +136,8 @@ func (c *subscriptionController) ListSubscriptions(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, subscriptions)
+}
+
+func (c *subscriptionController) TotalSubscriptionsPrice(ctx *gin.Context) {
+
 }
