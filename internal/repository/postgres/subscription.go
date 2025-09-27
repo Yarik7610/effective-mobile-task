@@ -190,5 +190,26 @@ func (r *subscriptionRepository) ListSubscriptions(ctx context.Context, page, co
 }
 
 func (r *subscriptionRepository) TotalSubscriptionsPrice(ctx context.Context, startDate, endDate time.Time, userID, serviceName *string) (uint, error) {
-	return 0, nil
+	sql := `
+		SELECT SUM(price)
+		FROM subscriptions
+		WHERE
+			($1::uuid IS NULL OR user_id = $1) AND
+			($2::varchar IS NULL OR service_name ILIKE $2) AND
+			start_date >= $3 AND ($4::date IS NULL OR start_date <= $4)
+	`
+	var totalPrice uint
+
+	err := r.pool.QueryRow(ctx, sql,
+		userID,
+		serviceName,
+		startDate,
+		endDate,
+	).Scan(&totalPrice)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return totalPrice, nil
 }

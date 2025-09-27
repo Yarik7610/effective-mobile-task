@@ -18,6 +18,7 @@ func InitRouter(pool *pgxpool.Pool) *gin.Engine {
 	{
 		subscriptionsGroup.GET("/", subscriptionController.ListSubscriptions)
 		subscriptionsGroup.GET("/:subscriptionID", subscriptionController.ReadSubscription)
+		subscriptionsGroup.GET("/totalPrice", subscriptionController.TotalSubscriptionsPrice)
 		subscriptionsGroup.POST("/", subscriptionController.CreateSubscription)
 		subscriptionsGroup.PUT("/:subscriptionID", subscriptionController.UpdateSubscription)
 		subscriptionsGroup.DELETE("/:subscriptionID", subscriptionController.DeleteSubscription)

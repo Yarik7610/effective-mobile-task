@@ -7,6 +7,7 @@ import (
 	"github.com/Yarik7610/effective-mobile-task/internal/dto"
 	"github.com/Yarik7610/effective-mobile-task/internal/query"
 	"github.com/Yarik7610/effective-mobile-task/internal/service"
+	"github.com/Yarik7610/effective-mobile-task/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -139,5 +140,37 @@ func (c *subscriptionController) ListSubscriptions(ctx *gin.Context) {
 }
 
 func (c *subscriptionController) TotalSubscriptionsPrice(ctx *gin.Context) {
+	var totalSubscriptionsPriceQuery query.TotalSubscriptionsPrice
 
+	if err := ctx.ShouldBindQuery(&totalSubscriptionsPriceQuery); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	startDateTime, err := utils.ParseMonthYearStringToTime(totalSubscriptionsPriceQuery.StartDate)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	endDateTime, err := utils.ParseMonthYearStringToTime(totalSubscriptionsPriceQuery.EndDate)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if totalSubscriptionsPriceQuery.UserID != nil {
+		if _, err := uuid.Parse(*totalSubscriptionsPriceQuery.UserID); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "userID isn't a valid UUID"})
+			return
+		}
+	}
+
+	totalPrice, customErr := c.subscriptionService.TotalSubscriptionsPrice(startDateTime, endDateTime, totalSubscriptionsPriceQuery.UserID, totalSubscriptionsPriceQuery.ServiceName)
+	if customErr != nil {
+		slog.Error("Total subscriptions price estimation failed", slog.Any("error", err))
+		ctx.JSON(customErr.Code, gin.H{"error": customErr.Message})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"price": totalPrice})
 }

@@ -14,3 +14,10 @@ type UpdateSubscription struct {
 	StartDate   *string `json:"start_date,omitempty"` //MM-YYYY
 	EndDate     *string `json:"end_date,omitempty"`   //MM-YYYY
 }
+
+type TotalSubscriptionsPrice struct {
+	StartDate   string  `form:"start_date" binding:"required"`
+	EndDate     string  `form:"end_date" binding:"required"`
+	UserID      *string `form:"user_id"`
+	ServiceName *string `form:"service_name"`
+}
