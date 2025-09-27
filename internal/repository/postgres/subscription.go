@@ -16,6 +16,7 @@ type SubscriptionRepository interface {
 	ReadSubscription(ctx context.Context, subscriptionID string) (*model.Subscription, error)
 	UpdateSubscription(ctx context.Context, updateSubscriptionDTO *dto.UpdateSubscription, updatedSubscription *model.Subscription, subscriptionID string) error
 	DeleteSubscription(ctx context.Context, subscriptionID string) error
+	ListSubscriptions(ctx context.Context, page, count uint, sort, order string) ([]model.Subscription, error)
 }
 
 type subscriptionRepository struct {
@@ -143,4 +144,8 @@ func (r *subscriptionRepository) DeleteSubscription(ctx context.Context, subscri
 	`
 	_, err := r.pool.Exec(ctx, sql, subscriptionID)
 	return err
+}
+
+func (r *subscriptionRepository) ListSubscriptions(ctx context.Context, page, count uint, sort, order string) ([]model.Subscription, error) {
+	return nil, nil
 }

@@ -15,6 +15,7 @@ type SubscriptionController interface {
 	ReadSubscription(ctx *gin.Context)
 	UpdateSubscription(ctx *gin.Context)
 	DeleteSubscription(ctx *gin.Context)
+	ListSubscriptions(ctx *gin.Context)
 }
 
 type subscriptionController struct {
@@ -101,4 +102,8 @@ func (c *subscriptionController) DeleteSubscription(ctx *gin.Context) {
 	}
 
 	ctx.AbortWithStatus(http.StatusNoContent)
+}
+
+func (c *subscriptionController) ListSubscriptions(ctx *gin.Context) {
+
 }

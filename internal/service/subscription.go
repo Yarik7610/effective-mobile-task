@@ -9,6 +9,7 @@ import (
 
 	"github.com/Yarik7610/effective-mobile-task/internal/dto"
 	"github.com/Yarik7610/effective-mobile-task/internal/model"
+	"github.com/Yarik7610/effective-mobile-task/internal/query"
 	"github.com/Yarik7610/effective-mobile-task/internal/repository/postgres"
 	"github.com/Yarik7610/effective-mobile-task/utils"
 )
@@ -20,6 +21,7 @@ type SubscriptionService interface {
 	ReadSubscription(subscriptionID string) (*model.Subscription, *utils.Err)
 	UpdateSubscription(updateSubscriptionDTO *dto.UpdateSubscription, subscriptionID string) (*model.Subscription, *utils.Err)
 	DeleteSubscription(subscriptionID string) *utils.Err
+	ListSubscriptions(listSubscriptionsQuery *query.ListSubscriptions) ([]model.Subscription, *utils.Err)
 }
 
 type subscriptionService struct {
@@ -116,4 +118,8 @@ func (s *subscriptionService) DeleteSubscription(subscriptionID string) *utils.E
 	}
 
 	return nil
+}
+
+func (s *subscriptionService) ListSubscriptions(listSubscriptionsQuery *query.ListSubscriptions) ([]model.Subscription, *utils.Err) {
+	return nil, nil
 }
